@@ -9,11 +9,11 @@ import {
 } from '@loopback/repository';
 import {
   del, get,
-  getModelSchemaRef, param, patch, post, put, requestBody,
+  getModelSchemaRef, HttpErrors, param, patch, post, put, requestBody,
   response
 } from '@loopback/rest';
 import axios from 'axios';
-import {Usuario} from '../models';
+import {Credenciales, Usuario} from '../models';
 import {UsuarioRepository} from '../repositories';
 import {AuthService} from '../services';
 
@@ -58,8 +58,8 @@ export class UsuarioController {
     // Notifiamos al usuario por telefono y cambiar la url por send_sms
     // let destino = usuario.telefono;
 
-    let asunto = 'Registro de usuario en plataforma';
-    let contenido = `Hola, ${usuario.nombre} ${usuario.apellido} su contraseña en el portal es: ${clave}`
+    let asunto = 'Registro de usuario en plataforma - test EQUIPO 6 APIs';
+    let contenido = `Hola, ${usuario.nombre} ${usuario.apellido} su contraseña en el portal es: ${clave}. --> Integración: Api Notificaciones con  Twilio (sms) y Sendgrid (emails) y Api REST loopback para gestionar solicitudes/respuestas.`
 
     //axios hace lo que hace postman
     axios({
@@ -183,4 +183,38 @@ export class UsuarioController {
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.usuarioRepository.deleteById(id);
   }
+
+
+  //Servicio de login
+  @post('/login', {
+    responses: {
+      '200': {
+        description: 'Identificación de usuarios'
+      }
+    }
+  })
+  async login(
+    @requestBody() credenciales: Credenciales
+  ) {
+    let p = await this.servicioAuth.IdentificarPersona(credenciales.usuario, credenciales.password);
+    if (p) {
+      let token = this.servicioAuth.GenerarTokenJWT(p);
+
+      return {
+        status: "success",
+        data: {
+          nombre: p.nombre,
+          apellidos: p.apellido,
+          correo: p.correo,
+          id: p.id
+        },
+        token: token
+      }
+    } else {
+      throw new HttpErrors[401]("Datos invalidos")
+    }
+  }
+
+
+
 }
