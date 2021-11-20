@@ -16,7 +16,9 @@ import axios from 'axios';
 import {Credenciales, Usuario} from '../models';
 import {UsuarioRepository} from '../repositories';
 import {AuthService} from '../services';
+import {authenticate} from '@loopback/authentication';
 
+@authenticate("admin") // servicio web que si requiere token
 export class UsuarioController {
   constructor(
     @repository(UsuarioRepository)
@@ -25,6 +27,7 @@ export class UsuarioController {
     public servicioAuth: AuthService
   ) { }
 
+  @authenticate.skip() // servicio web que no requiere token
   @post('/usuarios')
   @response(200, {
     description: 'Usuario model instance',
@@ -185,7 +188,8 @@ export class UsuarioController {
   }
 
 
-  //Servicio de login
+  //Servicio de login - identificar si la persona existe
+  @authenticate.skip() // servicio web que no requiere token
   @post('/login', {
     responses: {
       '200': {

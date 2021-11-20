@@ -11,7 +11,9 @@ import {
   Ruta,
 } from '../models';
 import {VueloRepository} from '../repositories';
+import {authenticate} from '@loopback/authentication';
 
+@authenticate("admin") // servicio web que si requiere token
 export class VueloRutaController {
   constructor(
     @repository(VueloRepository)
