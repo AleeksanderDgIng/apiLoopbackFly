@@ -218,7 +218,4 @@ export class UsuarioController {
       throw new HttpErrors[401]("Datos invalidos")
     }
   }
-
-
-
 }

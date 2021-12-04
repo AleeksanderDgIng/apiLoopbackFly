@@ -4,18 +4,12 @@ import {
   Filter,
   FilterExcludingWhere,
   repository,
-  Where,
+  Where
 } from '@loopback/repository';
 import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-  response,
+  del, get,
+  getModelSchemaRef, param, patch, post, put, requestBody,
+  response
 } from '@loopback/rest';
 import {Vuelo} from '../models';
 import {VueloRepository} from '../repositories';
@@ -25,9 +19,10 @@ import {authenticate} from '@loopback/authentication';
 export class VueloController {
   constructor(
     @repository(VueloRepository)
-    public vueloRepository : VueloRepository,
-  ) {}
+    public vueloRepository: VueloRepository,
+  ) { }
 
+  @authenticate.skip() // servicio web que no requiere token
   @post('/vuelos')
   @response(200, {
     description: 'Vuelo model instance',
